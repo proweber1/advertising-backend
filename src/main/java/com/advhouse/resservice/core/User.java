@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -24,7 +23,7 @@ import java.util.Objects;
 @NamedQueries({
         @NamedQuery(name = User.BY_USERNAME, query = "from User u WHERE username = :username")
 })
-public final class User {
+public class User {
     public static final String BY_USERNAME = "user.queries.byUsername";
 
     /**
@@ -32,7 +31,6 @@ public final class User {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonSerialize
     private Long id;
 
     /**

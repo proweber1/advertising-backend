@@ -58,7 +58,7 @@ public class UserRepresentationTest {
      * @throws Exception Ошибка десериализации из JSON'а
      */
     @Test
-    public void deserializesFromJSON() throws Exception {
+    public void deserializeFromJSON() throws Exception {
         final User fixture = MAPPER.readValue(fixture("fixtures/user.json"), User.class);
         Assertions.assertThat(fixture).isEqualTo(user);
     }
