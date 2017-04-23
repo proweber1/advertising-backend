@@ -34,7 +34,8 @@ public class UserDaoImpl extends AbstractDAO<User> implements UserDao {
      * {@inheritDoc}
      */
     public boolean isUserExist(final User user) {
-        return currentSession().createNamedQuery(User.BY_USERNAME, User.class)
+        return currentSession()
+                .createNamedQuery(User.BY_USERNAME, User.class)
                 .setParameter("username", user.getUsername())
                 .uniqueResultOptional()
                 .isPresent();
