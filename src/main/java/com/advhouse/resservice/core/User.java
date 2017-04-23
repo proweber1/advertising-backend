@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Сущность пользователя, является центральной сущностью
@@ -30,6 +32,7 @@ public final class User {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonSerialize
     private Long id;
 
     /**
@@ -109,5 +112,42 @@ public final class User {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * @param o Объект с которым мы будем сравниваться
+     * @return Результат сравнения двух объектов
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) &&
+                Objects.equals(username, user.username) &&
+                Objects.equals(password, user.password);
+    }
+
+    /**
+     * @return хеш код объекта
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, password);
+    }
+
+    /**
+     * Генерирует строковое представление класса, чтобы можно было
+     * легко читать в консоле например при тестировании
+     *
+     * @return Строковое представление
+     */
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }
