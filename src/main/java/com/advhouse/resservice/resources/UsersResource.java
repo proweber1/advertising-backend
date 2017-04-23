@@ -1,6 +1,5 @@
 package com.advhouse.resservice.resources;
 
-import com.advhouse.resservice.api.UserApi;
 import com.advhouse.resservice.core.User;
 import com.advhouse.resservice.db.UserDao;
 import com.codahale.metrics.annotation.Timed;
@@ -44,9 +43,7 @@ public class UsersResource {
     @Timed
     @UnitOfWork
     @ApiOperation(value = "Регистрация пользователя", response = User.class)
-    public User registration(@Valid @NotNull UserApi userApi) {
-        final User user = User.valueOf(userApi);
-
+    public User registration(@NotNull @Valid User user) {
         if (userDao.isUserExist(user)) {
             throw new BadRequestException("User must be unique!");
         }

@@ -3,13 +3,13 @@ database:
   driverClass: org.postgresql.Driver
 
   # the username
-  user: nfcxspmwrpqyhk
+  user: adv
 
   # the password
-  password: 699e3e1bd56a5a0804e0500e2a01cb312be2766c97f31e10ae6ee64f94ee7cf5
+  password: XWuiYdlj
 
   # the JDBC URL
-  url: jdbc:postgresql://ec2-174-129-37-15.compute-1.amazonaws.com/dbo1qo5m1fm244
+  url: jdbc:postgresql://127.0.0.1/adv
 
   # any properties specific to your JDBC driver:
   properties:

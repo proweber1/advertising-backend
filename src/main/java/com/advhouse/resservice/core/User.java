@@ -1,9 +1,9 @@
 package com.advhouse.resservice.core;
 
-import com.advhouse.resservice.api.UserApi;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.hibernate.annotations.Immutable;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -16,6 +16,7 @@ import javax.persistence.*;
  *
  * @author proweber1
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @Table(name = "users")
 @NamedQueries({
@@ -45,8 +46,7 @@ public final class User {
      * стандарту безопасности, пароль должен быть длиное не менее 8 символов
      */
     @NotEmpty
-    @Length(min = 8)
-    @JsonIgnore
+    @Length(min = 8, max = 128)
     private String password;
 
     /**
@@ -60,9 +60,12 @@ public final class User {
      * @param username Имя пользователя
      * @param password Пароль
      */
-    public User(String username, String password) {
-        setUsername(username);
-        setPassword(password);
+    @JsonCreator
+    public User(@JsonProperty("username") final String username,
+                @JsonProperty("password") final String password) {
+
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -73,24 +76,17 @@ public final class User {
     }
 
     /**
-     * @return Имя пользователя
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * @return Пароль пользователя
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
      * @param id Уникальный ID пользователя
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return Имя пользователя
+     */
+    public String getUsername() {
+        return username;
     }
 
     /**
@@ -101,19 +97,17 @@ public final class User {
     }
 
     /**
-     * @param password Пароль пользователя
+     * @return Пароль пользователя
      */
-    public void setPassword(String password) {
-        this.password = DigestUtils.sha256Hex(password);
+    @JsonIgnore
+    public String getPassword() {
+        return password;
     }
 
     /**
-     * Создает и заполняет сущность пользователя из пользователя из запроса клиента
-     *
-     * @param userApi Пользователь из запроса клиента
-     * @return Сущность пользователя
+     * @param password Пароль пользователя
      */
-    public static User valueOf(UserApi userApi) {
-        return new User(userApi.getUsername(), userApi.getPassword());
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
