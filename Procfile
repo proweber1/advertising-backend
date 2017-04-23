@@ -1,0 +1,1 @@
+web: java $JAVA_OPTS -jar target/restservice-1.0-SNAPSHOT.jar db migrate adv-config.yaml && java $JAVA_OPTS -Ddw.server.applicationConnectors[0].port=$PORT -jar target/restservice-1.0-SNAPSHOT.jar server adv-config.yaml
