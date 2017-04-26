@@ -24,6 +24,11 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import java.util.EnumSet;
 
 /**
  * Точка входа в adv приложение
@@ -79,6 +84,12 @@ public class AdvApplication extends Application<AdvConfiguration> {
 
         environment.jersey().register(new UsersResource(userDao));
         environment.jersey().register(new OAuthResource(authService));
+
+        // Регистрируем корс для всех маршрутов системы
+        FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+        cors.setInitParameter("allowedOrigins", "*");
+        cors.setInitParameter("allowedMethods", "GET, POST, HEAD, PATCH, PUT, DELETE, OPTIONS");
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         // Register oauth2
         registerOauth(accessTokenDao, environment);
