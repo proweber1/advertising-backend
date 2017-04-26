@@ -17,6 +17,7 @@ import static io.dropwizard.testing.FixtureHelpers.fixture;
  * @author proweber1
  */
 public class UserRepresentationTest {
+
     private static ObjectMapper MAPPER;
     private static User user;
 

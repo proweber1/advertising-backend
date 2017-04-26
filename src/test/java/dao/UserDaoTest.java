@@ -17,6 +17,7 @@ import org.junit.Test;
  * @author proweber1
  */
 public class UserDaoTest {
+
     /**
      * Правило для тестирования взаимодействия с базой данных
      */

@@ -21,10 +21,13 @@ import java.util.Objects;
 @Entity
 @Table(name = "users")
 @NamedQueries({
-        @NamedQuery(name = User.BY_USERNAME, query = "from User u WHERE username = :username")
+        @NamedQuery(name = User.BY_USERNAME, query = "from User u WHERE username = :username"),
+        @NamedQuery(name = User.FOR_AUTH, query = "from User u WHERE username = :username AND password = :password")
 })
 public class User {
+
     public static final String BY_USERNAME = "user.queries.byUsername";
+    public static final String FOR_AUTH = "user.queries.authCredentials";
 
     /**
      * Ключевое поле пользователя, это так же Primary Key

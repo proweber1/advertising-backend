@@ -45,7 +45,8 @@ public class UsersResource {
     @ApiOperation(value = "Регистрация пользователя", response = User.class)
     public User registration(@NotNull @Valid User user) {
         if (userDao.isUserExist(user)) {
-            throw new BadRequestException("User must be unique!");
+            throw new BadRequestException("Пользователь с таким логином уже существует, " +
+                    "попробуйте другой логин");
         }
 
         return userDao.save(user);

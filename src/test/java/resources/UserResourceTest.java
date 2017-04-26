@@ -22,8 +22,10 @@ import static org.mockito.Mockito.*;
  * @author proweber1
  */
 public class UserResourceTest {
+
     private static final UserDao dao = mock(UserDao.class);
     private static final UsersResource userResource = new UsersResource(dao);
+
     /**
      * Правило для тестирования ресурса
      */
@@ -31,6 +33,7 @@ public class UserResourceTest {
     public static final ResourceTestRule resources = ResourceTestRule.builder()
             .addResource(userResource)
             .build();
+
     /**
      * Правило для тестирования исключений
      */
@@ -100,7 +103,7 @@ public class UserResourceTest {
     @Test
     public void userAlreadyExistTest() {
         exp.expect(BadRequestException.class);
-        exp.expectMessage("User must be unique!");
+        exp.expectMessage("Пользователь с таким логином уже существует, попробуйте другой логин");
 
         when(dao.isUserExist(shamUser)).thenReturn(true);
         userResource.registration(shamUser);
