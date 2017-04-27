@@ -46,8 +46,6 @@ public class AuthServiceImpl implements AuthService {
         User user = userOptional.orElseThrow(() -> new LoginException(USER_NOT_FOUND_MESSAGE));
 
         final AccessToken accessToken = accessTokenGenerator.generate(user);
-        accessTokenDao.save(accessToken);
-
-        return accessToken;
+        return accessTokenDao.save(accessToken);
     }
 }
