@@ -1,6 +1,7 @@
 package com.advhouse.resservice.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
@@ -14,6 +15,7 @@ import java.util.Objects;
  *
  * @author proweber1
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LoginRepresentation {
 
     /**
