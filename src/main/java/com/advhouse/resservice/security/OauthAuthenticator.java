@@ -1,9 +1,11 @@
 package com.advhouse.resservice.security;
 
 import com.advhouse.resservice.core.AccessToken;
+import com.advhouse.resservice.core.User;
 import com.advhouse.resservice.db.AccessTokenDao;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
+import io.dropwizard.hibernate.UnitOfWork;
 
 import java.util.Optional;
 
@@ -13,14 +15,10 @@ import java.util.Optional;
  * @author proweber1
  */
 public class OauthAuthenticator implements Authenticator<String, UserPrincipal> {
+    private AccessTokenDao accessTokenDao;
 
-    private final AccessTokenDao dao;
-
-    /**
-     * @param dao DAO для работы с токенами авторизации
-     */
-    public OauthAuthenticator(AccessTokenDao dao) {
-        this.dao = dao;
+    public OauthAuthenticator(final AccessTokenDao accessTokenDao) {
+        this.accessTokenDao = accessTokenDao;
     }
 
     /**
@@ -30,12 +28,15 @@ public class OauthAuthenticator implements Authenticator<String, UserPrincipal> 
      * @return Принципал пользователя
      * @throws AuthenticationException Ошибка аутентификации
      */
+    @UnitOfWork
     @Override
     public Optional<UserPrincipal> authenticate(String s) throws AuthenticationException {
-        Optional<AccessToken> accessToken = dao.find(s);
-        if (!accessToken.isPresent()) {
-            Optional.empty();
+        final Optional<AccessToken> accessToken = accessTokenDao.find(s);
+        if (accessToken.isPresent()) {
+            final User user = accessToken.get().getUser();
+            return Optional.of(new UserPrincipal(user));
         }
-        return null;
+
+        return Optional.empty();
     }
 }

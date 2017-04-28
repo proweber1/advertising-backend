@@ -40,4 +40,20 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet id="3" author="proweber1">
+        <createTable tableName="advertising_companies">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="owner" referencedTableName="users"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

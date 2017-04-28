@@ -1,11 +1,15 @@
 package com.advhouse.resservice;
 
 import com.advhouse.resservice.core.AccessToken;
+import com.advhouse.resservice.core.AdvertisingCompany;
 import com.advhouse.resservice.core.User;
 import com.advhouse.resservice.db.AccessTokenDao;
+import com.advhouse.resservice.db.AdvertisingCompanyDao;
 import com.advhouse.resservice.db.UserDao;
 import com.advhouse.resservice.db.impl.AccessTokenDaoImpl;
+import com.advhouse.resservice.db.impl.AdvertisingCompanyDaoImpl;
 import com.advhouse.resservice.db.impl.UserDaoImpl;
+import com.advhouse.resservice.resources.AdvCompaniesResource;
 import com.advhouse.resservice.resources.OAuthResource;
 import com.advhouse.resservice.resources.UsersResource;
 import com.advhouse.resservice.security.OauthAuthenticator;
@@ -16,15 +20,18 @@ import com.advhouse.resservice.services.AuthServiceImpl;
 import com.advhouse.resservice.strategy.DefaultTokenGenerator;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.oauth.OAuthCredentialAuthFilter;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
+import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
@@ -40,7 +47,11 @@ public class AdvApplication extends Application<AdvConfiguration> {
     /**
      * Бандл для работы с hibernate
      */
-    private final HibernateBundle<AdvConfiguration> hibernate = new HibernateBundle<AdvConfiguration>(User.class, AccessToken.class) {
+    private final HibernateBundle<AdvConfiguration> hibernate = new HibernateBundle<AdvConfiguration>(
+            User.class,
+            AccessToken.class,
+            AdvertisingCompany.class
+    ) {
         public PooledDataSourceFactory getDataSourceFactory(AdvConfiguration configuration) {
             return configuration.getDatabase();
         }
@@ -79,20 +90,22 @@ public class AdvApplication extends Application<AdvConfiguration> {
     public void run(AdvConfiguration advConfiguration, Environment environment) throws Exception {
         final UserDao userDao = new UserDaoImpl(hibernate.getSessionFactory());
         final AccessTokenDao accessTokenDao = new AccessTokenDaoImpl(hibernate.getSessionFactory());
+        final AdvertisingCompanyDao advertisingCompanyDao = new AdvertisingCompanyDaoImpl(hibernate.getSessionFactory());
 
         final AuthService authService = new AuthServiceImpl(accessTokenDao, userDao, new DefaultTokenGenerator());
 
+        // Register oauth2
+        registerOauth(accessTokenDao, environment);
+
         environment.jersey().register(new UsersResource(userDao));
         environment.jersey().register(new OAuthResource(authService));
+        environment.jersey().register(new AdvCompaniesResource(advertisingCompanyDao));
 
         // Регистрируем корс для всех маршрутов системы
         FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
         cors.setInitParameter("allowedOrigins", "*");
         cors.setInitParameter("allowedMethods", "GET, POST, HEAD, PATCH, PUT, DELETE, OPTIONS");
         cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
-
-        // Register oauth2
-        registerOauth(accessTokenDao, environment);
     }
 
     /**
@@ -102,12 +115,17 @@ public class AdvApplication extends Application<AdvConfiguration> {
      * @param environment    Окружение приложения
      */
     private void registerOauth(AccessTokenDao accessTokenDao, Environment environment) {
+        final OauthAuthenticator authenticator = new UnitOfWorkAwareProxyFactory(hibernate)
+                .create(OauthAuthenticator.class, AccessTokenDao.class, accessTokenDao);
+
         OAuthCredentialAuthFilter<UserPrincipal> bearer = new OAuthCredentialAuthFilter.Builder<UserPrincipal>()
-                .setAuthenticator(new OauthAuthenticator(accessTokenDao))
+                .setAuthenticator(authenticator)
                 .setAuthorizer(new OauthAuthorizer())
                 .setPrefix("Bearer")
                 .buildAuthFilter();
 
         environment.jersey().register(new AuthDynamicFeature(bearer));
+        environment.jersey().register(RolesAllowedDynamicFeature.class);
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(UserPrincipal.class));
     }
 }
