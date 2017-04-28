@@ -2,7 +2,6 @@ package com.advhouse.resservice.security;
 
 import com.advhouse.resservice.core.User;
 
-import javax.security.auth.Subject;
 import java.security.Principal;
 
 /**
@@ -36,10 +35,5 @@ public class UserPrincipal implements Principal {
      */
     public User getUser() {
         return user;
-    }
-
-    @Override
-    public boolean implies(Subject subject) {
-        return false;
     }
 }
