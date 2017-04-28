@@ -49,6 +49,8 @@ public class AdvCompaniesResource {
     @UnitOfWork
     public AdvertisingCompany create(@NotNull @Valid AdvertisingCompany advertisingCompany,
                                      @Auth UserPrincipal userPrincipal) {
+
+        advertisingCompany.setOwner(userPrincipal.getUser());
         return advertisingCompanyDao.create(advertisingCompany);
     }
 }

@@ -31,6 +31,13 @@ public class UserPrincipal implements Principal {
         return user.getUsername();
     }
 
+    /**
+     * @return Авторизированный пользователь
+     */
+    public User getUser() {
+        return user;
+    }
+
     @Override
     public boolean implies(Subject subject) {
         return false;

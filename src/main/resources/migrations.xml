@@ -51,8 +51,11 @@
             </column>
             <column name="description" type="text"/>
             <column name="user_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="owner" referencedTableName="users"
-                             referencedColumnNames="id"/>
+                <constraints nullable="false"
+                             foreignKeyName="owner"
+                             referencedTableName="users"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
             </column>
         </createTable>
     </changeSet>
