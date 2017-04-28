@@ -1,5 +1,6 @@
 package com.advhouse.resservice.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -42,6 +43,8 @@ public class AdvertisingCompany {
      * между пользователями
      */
     @OneToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User owner;
 
     public AdvertisingCompany() {
